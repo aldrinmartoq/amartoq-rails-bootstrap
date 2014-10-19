@@ -936,8 +936,78 @@ end
 EOF
 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
+
+run <<-'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
+patch -p1 <<EOF
+diff -Ncr old.dashboard/config/locales/en.app.yml dashboard/config/locales/en.app.yml
+*** old.dashboard/config/locales/en.app.yml	Wed Dec 31 21:00:00 1969
+--- dashboard/config/locales/en.app.yml	Sun Oct 19 01:39:22 2014
+***************
+*** 0 ****
+--- 1,22 ----
++ en:
++   activerecord:
++     messages:
++       success:
++         created: "%{model} was successfully created."
++         updated: "%{model} was successfully updated."
++         deleted: "%{model} was successfully deleted."
++         activated: "%{model} was successfully activated."
++       error:
++         delete: "%{model} cannot be deleted."
++   app:
++     user_session:
++       login:
++         success: "Welcome back, %{name}."
++         error: "Wrong username or password."
++       logout:
++         success: "Goodbye, %{name}."
++     navbar:
++       logout: 'Logout'
++   unauthorized:
++     manage:
++       all: "You are not authorized to access %{action} on %{subject}"
+diff -Ncr old.dashboard/config/locales/en.bootstrap.yml dashboard/config/locales/en.bootstrap.yml
+*** old.dashboard/config/locales/en.bootstrap.yml	Wed Dec 31 21:00:00 1969
+--- dashboard/config/locales/en.bootstrap.yml	Sun Oct 19 01:41:00 2014
+***************
+*** 0 ****
+--- 1,16 ----
++ en:
++   helpers:
++     actions: "Actions"
++     links:
++       back: "Back"
++       cancel: "Cancel"
++       confirm: "Are you sure?"
++       destroy: "Delete"
++       new: "New %{model}"
++       edit: "Edit"
++       activate: "Activate"
++     titles:
++       edit: "Edit %{model}"
++       save: "Save"
++       new: "New %{model}"
++       delete: "Delete"
+diff -Ncr old.dashboard/app/views/users/_form.html.haml dashboard/app/views/users/_form.html.haml
+*** old.dashboard/app/views/users/_form.html.haml	Sun Oct 19 01:50:01 2014
+--- dashboard/app/views/users/_form.html.haml	Sun Oct 19 01:50:38 2014
+***************
+*** 1,6 ****
+--- 1,8 ----
+  = simple_form_for @user do |f|
+    = f.error_notification
+    = f.input :email
++   = f.input :password
++   = f.input :password_confirmation
+    .form-group
+      .form-actions.col-sm-offset-3.col-sm-9
+        = f.button :submit, :class => 'btn-primary'
+EOF
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
 a0_run 'rake db:seed'
-a0_git 'Integración de usuarios + authlogic + cancan'
+a0_git 'Integración de usuarios + authlogic + cancan + locales'
 
 # Quiet assets
 gem_group :development, :test do

@@ -1018,6 +1018,11 @@ end
 a0_run 'bundle install'
 a0_git 'Soporte silencio quiet_assets'
 
-after_bundle do
-  a0_git 'Fin de la instalación automática'
-end
+puts <<EOF
+XXXXX
+
+Favor ejecutar:
+git add
+git commit -m "Fin de la instalación"
+
+EOF

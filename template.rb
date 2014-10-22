@@ -5,7 +5,7 @@ end
 
 def a0_git(msg)
   git add: '.'
-  if $a0_run_list.empty?
+  if $a0_run_list.try(:empty?)
     git commit: "-a -m '#{msg}'."
   else
     txt = $a0_run_list.collect { |x| "$ #{x}" }.join("\n")
@@ -22,7 +22,7 @@ end
 # Configuración inicial
 $a0_run_list = []
 $a0_run_list << "rails #{ARGV.join(' ')}"
-run "bundle"
+a0_run "bundle"
 git :init
 a0_run "rake db:create db:migrate"
 a0_git 'Inicio proyecto'
@@ -56,6 +56,7 @@ a0_git 'Soporte formularios simple_form'
 gem 'bootstrap-sass'
 gem 'bootstrap-sass-extras'
 gem 'bootstrap-navbar'
+a0_run 'bundle install'
 run 'rm app/assets/stylesheets/application.css'
 run <<-'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
 base64 -D <<EOF > app/assets/images/a0-logo-blanco.png
@@ -635,6 +636,7 @@ a0_git 'Scaffold para usuarios con email y clave'
 gem 'authlogic'
 gem 'bcrypt'
 gem 'scrypt'
+a0_run 'bundle install'
 a0_git 'Autenticación con authlogic'
 
 # Pichicatear usuario + autenticación
@@ -1013,4 +1015,9 @@ a0_git 'Integración de usuarios + authlogic + cancan + locales'
 gem_group :development, :test do
   gem 'quiet_assets'
 end
-a0_git 'Quiet assets'
+a0_run 'bundle install'
+a0_git 'Soporte silencio quiet_assets'
+
+after_bundle do
+  a0_git 'Fin de la instalación automática'
+end

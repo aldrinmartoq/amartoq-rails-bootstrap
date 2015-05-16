@@ -29,11 +29,39 @@ a0_git 'Inicio proyecto'
 
 
 
+# Ignorar rejects
+run <<-'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
+cat <<EOF >> .gitignore
+*.rej
+*.orig
+EOF
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+a0_git 'Archivos de soporte'
+
+
+
+# Versionamiento
+file 'config/initializers/a0_version.rb', <<-CODE
+module A0
+  module App
+    NAME = "#{app_name.capitalize}"
+    module Version
+      NUMBER      = "0.0.1"
+      NAME        = ""
+      TAG         = `git describe --always`.chomp
+      DATETIME    = `git log --pretty=format:'(%ci)' -n 1`
+    end
+  end
+end
+CODE
+a0_git 'Versionamiento'
+
 # HAML
 gem 'haml-rails'
 gem_group :development, :test do
   gem 'html2haml'
 end
+a0_run 'bundle'
 a0_run 'for file in app/views/**/*.erb; do html2haml -e $file ${file%erb}haml && rm $file; done'
 a0_git 'Soporte plantillas HAML'
 
@@ -177,7 +205,7 @@ patch -p1 <<EOF
       = csrf_meta_tags
     %body
 !     = navbar fixed: :top do
-!       = navbar_header brand: 'App', brand_link: root_url
+!       = navbar_header brand: A0::App::NAME, brand_link: root_url
 !       
 !     .container
 !       .row
@@ -792,22 +820,21 @@ diff -Ncr old.dashboard/app/views/home/_login.html.haml dashboard/app/views/home
 --- dashboard/app/views/home/_login.html.haml	Sun Oct 19 00:42:49 2014
 ***************
 *** 0 ****
---- 1,15 ----
+--- 1,14 ----
 + .modal-dialog
 +   .modal-content
 +     = simple_form_for @user_session, url: login_path do |f|
 +       .modal-header
-+         %h4.text-center Iniciar Sesión
++         %h1.text-center Bienvenido a #{A0::App::NAME}
 +       .modal-body
-+         = f.error_notification
-+         = f.input :email, item_wrapper_class: 'col-sm-3', autofocus: true
-+         = f.input :password, item_wrapper_class: 'col-sm-3'
-+         .form-group
-+           .form-actions.col-sm-offset-3.col-sm-9
-+             = f.button :submit, 'Login'
++         .form-group= f.input_field :email, class: 'input-lg form-control', placeholder: 'username', autofocus: true
++         .form-group= f.input_field :password, class: 'input-lg form-control', placeholder: 'password'
++         .form-group= f.button :submit, 'Login', class: 'btn btn-primary btn-lg btn-block'
 +       .modal-footer
-+       
-+ = modal_dialog :id => "modal", :header => { :show_close => false, :title => 'Modal header' }, :body   => 'This is the body', :footer => content_tag(:button, 'Save', :class => 'btn btn-primary')
++         .text-muted
++           #{A0::App::NAME} #{A0::App::Version::NUMBER}
++           |
++           =link_to 'Servicios A0 SpA', 'http://a0.cl/'
 diff -Ncr old.dashboard/app/views/home/index.html.haml dashboard/app/views/home/index.html.haml
 *** old.dashboard/app/views/home/index.html.haml	Sun Oct 19 00:14:26 2014
 --- dashboard/app/views/home/index.html.haml	Sun Oct 19 00:28:11 2014
@@ -1022,7 +1049,7 @@ puts <<EOF
 XXXXX
 
 Favor ejecutar:
-git add
-git commit -m "Fin de la instalación"
+git add .
+git commit -m "Fin de plantilla"
 
 EOF
